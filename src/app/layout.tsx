@@ -38,18 +38,11 @@ export const metadata: Metadata = {
   },
 };
 
-const UMAMI_URL = process.env.NEXT_PUBLIC_UMAMI_URL;
-const UMAMI_WEBSITE_ID = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={inter.variable} data-scroll-behavior="smooth">
       <body className="bg-background font-inter text-base text-text antialiased">
         <div className="flex min-h-screen flex-col">{children}</div>
-        {/* Umami Analytics — sans cookies, RGPD-compatible */}
-        {UMAMI_URL && UMAMI_WEBSITE_ID && (
-          <script defer src={`${UMAMI_URL}/script.js`} data-website-id={UMAMI_WEBSITE_ID} />
-        )}
       </body>
     </html>
   );
