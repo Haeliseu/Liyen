@@ -8,8 +8,8 @@ services:
       - NODE_ENV=production
       - RESEND_API_KEY=${RESEND_API_KEY}
     networks:
-      - proxy
+      - haeliseu_network
 
 networks:
-  proxy:
+  haeliseu_network:
     external: true
