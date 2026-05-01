@@ -1,0 +1,39 @@
+# Nettoie les anciennes images sur GHCR apres chaque build reussi
+# Conserve les 5 dernieres versions taguees, supprime le reste
+name: Cleanup GHCR images
+
+on:
+  workflow_run:
+    workflows: ["CI & Build"]
+    types:
+      - completed
+  workflow_dispatch:
+
+concurrency:
+  group: cleanup-ghcr
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      packages: write
+
+    steps:
+      - name: Supprimer les versions non taguees (SHA orphelins)
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: liyen
+          package-type: container
+          min-versions-to-keep: 5
+          delete-only-untagged-versions: true
+
+      - name: Supprimer les anciennes versions taguees
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: liyen
+          package-type: container
+          min-versions-to-keep: 5
+          delete-only-untagged-versions: false
+          ignore-versions: "^latest$"

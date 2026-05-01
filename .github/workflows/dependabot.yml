@@ -1,0 +1,103 @@
+version: 2
+
+updates:
+
+  # ─────────────────────────────────────────────
+  # NPM — dependances Node.js / Next.js
+  # ─────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Guadeloupe"
+    open-pull-requests-limit: 8
+
+    groups:
+      next-ecosystem:
+        patterns:
+          - "next"
+          - "@next/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      react-ecosystem:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+        update-types:
+          - "minor"
+          - "patch"
+
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "@playwright/test"
+          - "@testing-library/*"
+          - "jsdom"
+        update-types:
+          - "minor"
+          - "patch"
+
+      dev-tooling:
+        patterns:
+          - "@biomejs/*"
+          - "typescript"
+          - "@types/*"
+          - "@vitejs/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    ignore:
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(dev-deps)"
+      include: "scope"
+
+    labels:
+      - "dependencies"
+      - "npm"
+
+    reviewers:
+      - "Haeliseu"
+
+  # ─────────────────────────────────────────────
+  # DOCKER — image de base node:alpine
+  # Epingle sur Node.js 24 LTS (support jusqu'en avril 2028)
+  # Dependabot proposera uniquement les patches 24.x.x
+  # ─────────────────────────────────────────────
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Guadeloupe"
+    open-pull-requests-limit: 2
+
+    ignore:
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
+
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+
+    labels:
+      - "dependencies"
+      - "docker"
+
+    reviewers:
+      - "Haeliseu"
