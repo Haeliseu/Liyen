@@ -1,5 +1,6 @@
 services:
-  app:
+  container_name: liyen
+  liyen:
     image: ghcr.io/haeliseu/liyen:latest
     restart: unless-stopped
     ports:
