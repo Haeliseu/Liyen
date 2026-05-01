@@ -1,0 +1,68 @@
+# Infrastructure serveur — à déployer UNE SEULE FOIS sur le VPS/Pi
+# Gère le reverse proxy SSL et les analytics pour tous les conteneurs.
+#
+# Démarrage : docker compose -f docker-compose.infra.yml up -d
+#
+# Nginx Proxy Manager
+#   Interface d'admin : http://<IP>:81
+#   Identifiants par défaut : admin@example.com / changeme  ← CHANGER IMMÉDIATEMENT
+#
+# Umami Analytics
+#   Interface d'admin : http://<IP>:3001  (ou via NPM → analytics.liyen.fr)
+#   Identifiants par défaut : admin / umami  ← CHANGER IMMÉDIATEMENT
+
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"    # HTTP (redirige vers HTTPS)
+      - "443:443"  # HTTPS
+      - "81:81"    # Interface d'administration NPM
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD:-changeme}@umami-db:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: ${UMAMI_APP_SECRET:-changeme_use_a_real_secret}
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    networks:
+      - proxy
+
+  umami-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:-changeme}
+    volumes:
+      - umami_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - proxy
+
+volumes:
+  npm_data:
+  npm_letsencrypt:
+  umami_db:
+
+networks:
+  proxy:
+    name: proxy
+    driver: bridge

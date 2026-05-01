@@ -37,3 +37,14 @@ next-env.d.ts
 
 # contentlayer
 .contentlayer
+
+# IDE
+.idea/
+
+# test artifacts
+/test-results/
+/playwright-report/
+/coverage/
+
+# package-lock (on utilise pnpm)
+package-lock.json
