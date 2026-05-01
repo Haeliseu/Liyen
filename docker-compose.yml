@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/${GITHUB_OWNER}/liyen:${IMAGE_TAG:-latest}
+    image: ghcr.io/Haeliseu/liyen:latest
     restart: unless-stopped
     ports:
       - "3000:3000"
